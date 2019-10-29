@@ -1,0 +1,46 @@
+{
+	"name": "BlueSpiceUEModuleTable2Excel",
+	"version": "3.2.0-alpha",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:UEModuleTable2Excel",
+	"author": [
+		"Patric Wirth"
+	],
+	"descriptionmsg": "bs-uemoduletable2excel-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.31.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 3.1",
+			"BlueSpiceUniversalExport": ">= 3.1"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceUEModuleTable2Excel": {
+					"className": "\\BlueSpice\\UEModuleTable2Excel\\Extension",
+					"extPath": "/BlueSpiceUEModuleTable2Excel",
+					"package": "BlueSpice Pro",
+					"status": "beta"
+				}
+			}
+		}
+	},
+	"MessagesDirs": {
+		"BlueSpiceUEModuleTable2Excel": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"BsUEModuleTable2Excel": "includes/BsUEModuleTable2Excel.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\UEModuleTable2Excel\\": "src/"
+	},
+	"Hooks": {
+		"BSUniversalExportSpecialPageExecute": "\\BlueSpice\\UEModuleTable2Excel\\Extension::onBSUniversalExportSpecialPageExecute"
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}
