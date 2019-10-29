@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Zoranzoki21"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Омогућава извоз у Ексел форматима и CSV формату",
+	"bs-uemoduletable2excel-overview-title": "Извоз у Ексел",
+	"bs-uemoduletable2excel-overview-description": "Извози табеле из специјалних страница и страница са садржајем у Ексел.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Овај мод омогућује извоз у Ексел."
+}
