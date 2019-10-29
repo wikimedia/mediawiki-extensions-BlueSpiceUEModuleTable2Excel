@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Patric Wirth <wirth@hallowelt.com>"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Ermöglicht das Exportieren nach Excel Formaten und CSV",
+	"bs-uemoduletable2excel-btn-export": "Excel",
+	"bs-uemoduletable2excel-overview-title": "Excel Export",
+	"bs-uemoduletable2excel-overview-description": "Exportiert Tabellen von Spezialseiten und Inhaltsseiten nach Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Dieses Modul wird von der &quot;BlueSpiceExportTables&quot; Erweiterung zur Verfügung gestellt um Tabellen nach Excel exportieren zu können."
+}
