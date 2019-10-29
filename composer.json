@@ -1,0 +1,13 @@
+{
+	"name": "bluespice/uemoduletable2excel",
+	"type": "mediawiki-extension",
+	"description": "Enables export of tables to Excel and CSV",
+	"license": "GPL-3.0-only",
+	"extra": {
+		"installer-name": "BlueSpiceUEModuleTable2Excel"
+	},
+	"require": {
+		"composer/installers": "~1.0",
+		"phpoffice/phpspreadsheet": "~1.6"
+	}
+}
