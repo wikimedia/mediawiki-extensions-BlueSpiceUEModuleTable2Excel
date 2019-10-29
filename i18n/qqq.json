@@ -1,7 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"    Patric Wirth"
+			"Patric Wirth"
 		]
-	}
+	},
+	"bs-uemoduletable2excel-extension-description": "{{desc|name=BlueSpiceUEModuleTable2Excel}}",
+	"bs-uemoduletable2excel-overview-title": "Universal export module name",
+	"bs-uemoduletable2excel-overview-description": "Universal export module description",
+	"bs-uemoduletable2excel-overview-bodycontent": "Universal export module body text"
 }

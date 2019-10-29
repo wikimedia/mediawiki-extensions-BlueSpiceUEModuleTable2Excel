@@ -260,9 +260,9 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 	 */
 	public function getOverview() {
 		$oModuleOverviewView = new ViewExportModuleOverview();
-		$oModuleOverviewView->setOption( 'module-title', wfMessage( 'bs-uemoduletable2csv-overview-title' )->text() );
-		$oModuleOverviewView->setOption( 'module-description', wfMessage( 'bs-uemoduletable2csv-overview-description' )->text() );
-		$oModuleOverviewView->setOption( 'module-bodycontent', wfMessage( 'bs-uemoduletable2csv-overview-bodycontent' )->text().'<br/>' );
+		$oModuleOverviewView->setOption( 'module-title', wfMessage( 'bs-uemoduletable2excel-overview-title' )->text() );
+		$oModuleOverviewView->setOption( 'module-description', wfMessage( 'bs-uemoduletable2excel-overview-description' )->text() );
+		$oModuleOverviewView->setOption( 'module-bodycontent', wfMessage( 'bs-uemoduletable2excel-overview-bodycontent' )->text().'<br/>' );
 
 		return $oModuleOverviewView;
 	}
