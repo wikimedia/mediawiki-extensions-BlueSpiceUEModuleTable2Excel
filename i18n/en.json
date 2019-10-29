@@ -5,8 +5,7 @@
 		]
 	},
 	"bs-uemoduletable2excel-extension-description": "Enables export to Excel formats and CSV",
-	"bs-uemoduletable2excel-btn-export": "Excel",
-	"bs-uemoduletable2excel-overview-title": "Excel Export",
-	"bs-uemoduletable2excel-overview-description": "Exports Tables from SpecialPages and ContenPages to Excel.",
-	"bs-uemoduletable2excel-overview-bodycontent": "This Module is provided by the &quot;BlueSpiceExportTables&quot; Extension and enables export to Excel."
+	"bs-uemoduletable2excel-overview-title": "Excel export",
+	"bs-uemoduletable2excel-overview-description": "Exports tables from special pages and content pages to Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "This module enables export to Excel."
 }
