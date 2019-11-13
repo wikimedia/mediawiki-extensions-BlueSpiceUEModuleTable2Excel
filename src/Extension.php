@@ -28,6 +28,7 @@
  */
 
 namespace BlueSpice\UEModuleTable2Excel;
+
 /**
  * Base class for BlueSpiceExportTables extension
  * @package BlueSpiceExportTables
@@ -39,10 +40,11 @@ class Extension extends \BlueSpice\Extension {
 	 *
 	 * @param SpecialUniversalExport $oSpecialPage
 	 * @param string $sParam
-	 * @param array $aModules
+	 * @param array &$aModules
 	 * @return true
 	 */
-	public static function onBSUniversalExportSpecialPageExecute( $oSpecialPage, $sParam, &$aModules ) {
+	public static function onBSUniversalExportSpecialPageExecute( $oSpecialPage,
+		$sParam, &$aModules ) {
 		$aModules['table2excel'] = new \BsUEModuleTable2Excel();
 		return true;
 	}
