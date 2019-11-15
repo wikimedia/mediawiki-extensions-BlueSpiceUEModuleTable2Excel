@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"StanProg"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Включва изнасянето към формати за Excel или като CSV",
+	"bs-uemoduletable2excel-overview-title": "Изнасяне към Excel",
+	"bs-uemoduletable2excel-overview-description": "Изнася таблици от специални страници и такива със съдържание, към Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Този модул включва изнасянето към Excel."
+}

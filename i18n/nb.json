@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Slår på eksportering til Excel-formater og CSV",
+	"bs-uemoduletable2excel-overview-title": "Excel-eksport",
+	"bs-uemoduletable2excel-overview-description": "Eksporterer tabeller fra spesialsider og innholdssider til Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Denne modulen gjør det mulig å eksportere til Excel."
+}
