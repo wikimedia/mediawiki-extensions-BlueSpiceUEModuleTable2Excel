@@ -8,10 +8,10 @@
 	],
 	"descriptionmsg": "bs-uemoduletable2excel-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.31.0",
+		"MediaWiki": "~1.31",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 3.1",
-			"BlueSpiceUniversalExport": ">= 3.1"
+			"BlueSpiceFoundation": "~3.1",
+			"BlueSpiceUniversalExport": "~3.1"
 		}
 	},
 	"type": "bluespice",
