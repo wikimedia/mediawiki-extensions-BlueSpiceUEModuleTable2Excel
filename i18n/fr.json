@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Permet l’exportation vers les formats Excel et CSV",
+	"bs-uemoduletable2excel-overview-title": "Exportation Excel",
+	"bs-uemoduletable2excel-overview-description": "Exporte les tableaux des pages spéciales et des pages de contenu vers Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Ce module permet d’exporter vers Excel."
+}
