@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "啟用匯出 Excel 格式與 CSV",
+	"bs-uemoduletable2excel-overview-title": "Excel 匯出",
+	"bs-uemoduletable2excel-overview-description": "匯出來自特殊頁面與內容頁面的表格成 Excel。",
+	"bs-uemoduletable2excel-overview-bodycontent": "此模組啟用匯出成 Excel。"
+}

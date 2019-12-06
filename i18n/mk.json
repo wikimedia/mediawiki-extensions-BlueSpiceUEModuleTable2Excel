@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vlad5250"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Вклучува извоз во формати за Excel и како CSV",
+	"bs-uemoduletable2excel-overview-title": "Извоз во Excel",
+	"bs-uemoduletable2excel-overview-description": "Извезува табели од службени и содржински страници во Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Овој модул вклучува извоз во Excel."
+}

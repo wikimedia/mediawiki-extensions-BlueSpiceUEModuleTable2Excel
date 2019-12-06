@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardo Addad de Oliveira"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Permite exportar para formatos Excel e CSV",
+	"bs-uemoduletable2excel-overview-title": "Exportar para Excel",
+	"bs-uemoduletable2excel-overview-description": "Exporta tabelas de páginas especiais e páginas de conteúdo para o Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Este módulo permite exportar para o Excel."
+}
