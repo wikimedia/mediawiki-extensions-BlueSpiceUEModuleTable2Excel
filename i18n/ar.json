@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"ديفيد"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "يتيح التصدير إلى صيغتي Excel وCSV",
+	"bs-uemoduletable2excel-overview-title": "تصدير إكسل",
+	"bs-uemoduletable2excel-overview-description": "يصدر الجداول من الصفحات الخاصة وصفحات المحتوى إلى إكسل.",
+	"bs-uemoduletable2excel-overview-bodycontent": "هذه الوحدة تمكن التصدير إلى إكسل."
+}
