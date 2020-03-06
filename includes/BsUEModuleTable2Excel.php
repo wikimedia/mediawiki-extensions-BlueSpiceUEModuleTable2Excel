@@ -156,7 +156,7 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 			$aOptions['LastModifiedBy'] = $GLOBALS['wgSitename'];
 		} else {
 			$oWikiPage = WikiPage::factory( $oTitle );
-			$util = Services::getInstance()->getBSUtilityFactory();
+			$util = Services::getInstance()->getService( 'BSUtilityFactory' );
 
 			$aOptions['Creator'] = $util->getUserHelper(
 				$oWikiPage->getCreator()
