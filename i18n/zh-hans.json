@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"XinuGod"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "支持导出Excel格式和CSV格式",
+	"bs-uemoduletable2excel-overview-title": "导出为Excel",
+	"bs-uemoduletable2excel-overview-description": "导出页面（特殊页面和内容页面）为PDF。",
+	"bs-uemoduletable2excel-overview-bodycontent": "此模块允许导出到Excel。"
+}
