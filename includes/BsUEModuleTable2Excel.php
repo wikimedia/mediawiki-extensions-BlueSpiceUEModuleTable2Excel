@@ -296,5 +296,6 @@ EOT;
 
 		return $oModuleOverviewView;
 	}
+
 	// </editor-fold>
 }
