@@ -1,7 +1,6 @@
 <?php
 
-use BlueSpice\Services;
-
+use MediaWiki\MediaWikiServices;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -113,7 +112,7 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 		}
 
 		$oWriter->save( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
-		$sMimeType = Services::getInstance()->getMimeAnalyzer()->findMediaType(
+		$sMimeType = MediaWikiServices::getInstance()->getMimeAnalyzer()->findMediaType(
 			$sModeTo
 		);
 
@@ -131,7 +130,7 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 
 		$aResponse['content'] = $oFile->getValue();
 
-		$config = Services::getInstance()->getConfigFactory()->makeConfig(
+		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig(
 			'bsg'
 		);
 
@@ -156,7 +155,7 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 			$aOptions['LastModifiedBy'] = $GLOBALS['wgSitename'];
 		} else {
 			$oWikiPage = WikiPage::factory( $oTitle );
-			$util = Services::getInstance()->getService( 'BSUtilityFactory' );
+			$util = MediaWikiServices::getInstance()->getService( 'BSUtilityFactory' );
 
 			$aOptions['Creator'] = $util->getUserHelper(
 				$oWikiPage->getCreator()
