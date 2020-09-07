@@ -4,5 +4,8 @@
 			"Hamilton Abreu"
 		]
 	},
-	"bs-uemoduletable2excel-overview-description": "Exporta tabelas de páginas especiais e páginas de conteúdo para Excel."
+	"bs-uemoduletable2excel-overview-description": "Exporta tabelas de páginas especiais e páginas de conteúdo para Excel.",
+	"bs-uemoduletable2excel-extension-description": "Permite a exportação para formatos Excel e para CSV",
+	"bs-uemoduletable2excel-overview-title": "Exportação para Excel",
+	"bs-uemoduletable2excel-overview-bodycontent": "Este módulo permite exportar para Excel."
 }
