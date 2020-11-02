@@ -38,13 +38,16 @@ class BsUEModuleTable2Excel implements BsUniversalExportModule {
 			$sContent = $this->prepareHTML( $sContent );
 		}
 
-		\Hooks::run( 'BsUEModuleTable2ExcelBeforeProcess', [
-			$this,
-			&$sModeFrom,
-			&$sModeTo,
-			&$sContent,
-			&$tmpFileName
-		] );
+		MediaWikiServices::getInstance()->getHookContainer()->run(
+			'BsUEModuleTable2ExcelBeforeProcess',
+			[
+				$this,
+				&$sModeFrom,
+				&$sModeTo,
+				&$sContent,
+				&$tmpFileName
+			]
+		);
 
 		$oStatus = BsFileSystemHelper::saveToCacheDirectory(
 			"$tmpFileName.$sModeFrom",
