@@ -25,6 +25,11 @@
 					"status": "beta"
 				}
 			}
+		},
+		"BlueSpiceUniversalExport": {
+			"ModuleRegistry": {
+				"table2excel": "\\BsUEModuleTable2Excel::factory"
+			}
 		}
 	},
 	"MessagesDirs": {
@@ -37,9 +42,6 @@
 	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\UEModuleTable2Excel\\": "src/"
-	},
-	"Hooks": {
-		"BSUniversalExportSpecialPageExecute": "\\BlueSpice\\UEModuleTable2Excel\\Extension::onBSUniversalExportSpecialPageExecute"
 	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2
