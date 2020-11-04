@@ -2,11 +2,12 @@
 
 use BlueSpice\Services;
 
+use BlueSpice\UniversalExport\ExportModule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class BsUEModuleTable2Excel implements BsUniversalExportModule {
+class BsUEModuleTable2Excel extends ExportModule {
 
 	/**
 	 * Implementation of BsUniversalExportModule interface.
