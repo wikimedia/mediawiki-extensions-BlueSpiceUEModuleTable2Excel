@@ -65,7 +65,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 				"{$oStatus->getValue()}/$tmpFileName.$sModeFrom"
 			);
 		} catch ( Exception $e ) {
-			throw new Exception( "Unsupportet mode $sModeFrom" );
+			throw new Exception( "Unsupported mode $sModeFrom" );
 		}
 
 		// $oReader->load( "$tmpFileName.$sModeFrom" );
@@ -259,6 +259,7 @@ EOT;
 					"$sCol$iRow"
 				);
 				$sVal = trim( $cell->getValue() );
+				$sVal = $this->stripPotentialFormula( $sVal );
 				if ( $iRow == 1 && !empty( $sVal ) ) {
 					$bFirstRowEmptyForNoReason = false;
 				}
@@ -268,13 +269,32 @@ EOT;
 					// new cell
 					$sVal = str_replace( $aOptions['Delimiter'], '', $sVal );
 				}
-				$cell->setValue( trim( $sVal ) );
+				$sVal = trim( $sVal );
+				$sVal = $this->stripPotentialFormula( $sVal );
+				$cell->setValue( $sVal );
 			}
 		}
 		// Remove first row, when it is empty for unknown reason
 		if ( $bFirstRowEmptyForNoReason ) {
 			$spreadsheet->getActiveSheet()->removeRow( 1, 1 );
 		}
+	}
+
+	/**
+	 *
+	 * From https://phpspreadsheet.readthedocs.io/en/latest/topics/accessing-cells/#setting-a-formula-in-a-cell
+	 * "if you store a string value with the first character an = in a cell.
+	 *  PHPSpreadsheet will treat that value as a formula"
+	 *
+	 * If the formula is not valid this may lead to an exception.
+	 * We currently do not support formulas at all, therefore we explicitly
+	 * strip the leading "=".
+	 *
+	 * @param string $rawCellValue
+	 * @return string
+	 */
+	private function stripPotentialFormula( $rawCellValue ) {
+		return preg_replace( '#^=#', '', $rawCellValue );
 	}
 
 	/**
