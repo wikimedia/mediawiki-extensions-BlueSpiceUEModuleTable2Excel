@@ -116,9 +116,8 @@ class BsUEModuleTable2Excel extends ExportModule {
 		}
 
 		$oWriter->save( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
-		$sMimeType = MediaWikiServices::getInstance()->getMimeAnalyzer()->findMediaType(
-			$sModeTo
-		);
+		$sMimeType = MediaWikiServices::getInstance()->getMimeAnalyzer()
+			->getMimeTypeFromExtensionOrNull( $sModeTo ) ?? MEDIATYPE_UNKNOWN;
 
 		$aResponse['filename'] = "$tmpFileName.$sModeTo";
 		$aResponse['mime-type'] = $sMimeType;
