@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piramidion"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Уможливлює експорт у формати Excel та CSV",
+	"bs-uemoduletable2excel-overview-title": "Еспорт в Excel",
+	"bs-uemoduletable2excel-overview-description": "Експортує таблиці зі спеціальних сторінок та сторінок контентного типу в Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Цей модуль уможливлює експорт в Excel."
+}
