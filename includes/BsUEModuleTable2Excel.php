@@ -320,4 +320,25 @@ EOT;
 	}
 
 	// </editor-fold>
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getExportPermission() {
+		return null;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getSubactionHandlers() {
+		return null;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getActionButtonDetails() {
+		return null;
+	}
 }
