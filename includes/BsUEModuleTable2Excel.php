@@ -1,6 +1,7 @@
 <?php
 
 use BlueSpice\UniversalExport\ExportModule;
+use BlueSpice\UniversalExport\ExportSpecification;
 use MediaWiki\MediaWikiServices;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
@@ -10,28 +11,32 @@ class BsUEModuleTable2Excel extends ExportModule {
 
 	/**
 	 * Implementation of BsUniversalExportModule interface.
-	 * @param SpecialUniversalExport &$oCaller
+	 * @param ExportSpecification &$specification
 	 * @return array array(
 	 *     'mime-type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	 *     'filename' => 'Filename.docx',
 	 *     'content' => '8F3BC3025A7...'
 	 * );
+	 * @throws ConfigException
+	 * @throws FatalError
+	 * @throws MWException
+	 * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
 	 */
-	public function createExportFile( &$oCaller ) {
+	public function createExportFile( ExportSpecification &$specification ) {
 		$aResponse = [];
-		$sModeFrom = strtolower( $oCaller->getRequest()->getVal(
+		$sModeFrom = strtolower( RequestContext::getMain()->getRequest()->getVal(
 			'ModeFrom',
 			'html'
 		) );
-		$sModeTo = strtolower( $oCaller->getRequest()->getVal(
+		$sModeTo = strtolower( RequestContext::getMain()->getRequest()->getVal(
 			'ModeTo',
 			'xls'
 		) );
-		$sContent = $oCaller->getRequest()->getVal( 'content', '' );
+		$sContent = RequestContext::getMain()->getRequest()->getVal( 'content', '' );
 
 		$aOptions = array_merge_recursive(
-			$this->getDefaultOptions( $oCaller ),
-			$oCaller->getRequest()->getArray( 'options', [] )
+			$this->getDefaultOptions( $specification ),
+			RequestContext::getMain()->getRequest()->getArray( 'options', [] )
 		);
 		$tmpFileName = time();
 
@@ -99,7 +104,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 			);
 		}
 
-		$this->adjustCellContent( $spreadsheet, $oCaller, $aOptions );
+		$this->adjustCellContent( $spreadsheet, $specification, $aOptions );
 
 		$oWriter = IOFactory::createWriter( $spreadsheet, ucfirst( $sModeTo ) );
 
@@ -146,12 +151,12 @@ class BsUEModuleTable2Excel extends ExportModule {
 
 	/**
 	 *
-	 * @param SpecialUniversalExport $oCaller
+	 * @param ExportSpecification $specification
 	 * @param array $aOptions
 	 * @return array
 	 */
-	protected function getDefaultOptions( SpecialUniversalExport $oCaller, $aOptions = [] ) {
-		$oTitle = $oCaller->oRequestedTitle;
+	protected function getDefaultOptions( ExportSpecification $specification, $aOptions = [] ) {
+		$oTitle = $specification->getTitle();
 
 		if ( $oTitle->getNamespace() < 0 ) {
 			$aOptions['Creator'] = $GLOBALS['wgSitename'];
@@ -244,10 +249,12 @@ EOT;
 	/**
 	 *
 	 * @param Spreadsheet $spreadsheet
-	 * @param SpecialUniversalExport $oCaller
+	 * @param ExportSpecification $specs
 	 * @param array $aOptions
 	 */
-	protected function adjustCellContent( Spreadsheet $spreadsheet, $oCaller, $aOptions ) {
+	protected function adjustCellContent(
+		Spreadsheet $spreadsheet, ExportSpecification $specs, $aOptions
+	) {
 		$sLastCol = $spreadsheet->getActiveSheet()->getHighestColumn();
 		$iLastRow = $spreadsheet->getActiveSheet()->getHighestRow();
 		$bFirstRowEmptyForNoReason = true;
@@ -262,7 +269,7 @@ EOT;
 				if ( $iRow == 1 && !empty( $sVal ) ) {
 					$bFirstRowEmptyForNoReason = false;
 				}
-				$sModeTo = $oCaller->getRequest()->getVal( 'ModeTo', 'xls' );
+				$sModeTo = $specs->getParam( 'ModeTo', 'xls' );
 				if ( $sModeTo == 'csv' && !empty( $aOptions['Delimiter'] ) ) {
 					// Remove csv Delimiter from cell content or it counts as
 					// new cell
@@ -318,8 +325,6 @@ EOT;
 
 		return $oModuleOverviewView;
 	}
-
-	// </editor-fold>
 
 	/**
 	 * @inheritDoc
