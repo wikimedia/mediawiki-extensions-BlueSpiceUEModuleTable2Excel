@@ -4,6 +4,8 @@
 			"Ykhwong"
 		]
 	},
+	"bs-uemoduletable2excel-extension-description": "엑셀 포맷과 CSV로 내보내기를 활성화합니다",
 	"bs-uemoduletable2excel-overview-title": "Excel 내보내기",
+	"bs-uemoduletable2excel-overview-description": "특수문서와 내용 문서의 표를 엑셀로 내보냅니다.",
 	"bs-uemoduletable2excel-overview-bodycontent": "이 모듈을 Excel로 내보내기를 활성화합니다."
 }
