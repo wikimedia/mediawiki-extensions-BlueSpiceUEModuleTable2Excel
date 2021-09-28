@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Permitte le exportation in formatos Excel e CSV",
+	"bs-uemoduletable2excel-overview-title": "Exportation in Excel",
+	"bs-uemoduletable2excel-overview-description": "Exporta tabellas de paginas special e de contento in formato Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Iste modulo permitte le exportation in Excel."
+}
