@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Romaine"
+		]
+	},
+	"bs-uemoduletable2excel-overview-title": "Naar Excel exporteren",
+	"bs-uemoduletable2excel-overview-description": "Exporteert de pagina's (speciale pagina's en inhoudspagina's) naar Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Deze module maakt het mogelijk te exporteren naar Excel."
+}
