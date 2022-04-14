@@ -1,4 +1,5 @@
 {
+	"name": "BlueSpiceUEModuleTable2Excel",
 	"private": true,
 	"scripts": {
 		"test": "grunt test"
