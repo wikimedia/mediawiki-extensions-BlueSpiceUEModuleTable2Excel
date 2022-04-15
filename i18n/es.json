@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"DiegoAmbrocio",
 			"Fitoschido"
 		]
 	},
+	"bs-uemoduletable2excel-extension-description": "Permite exportar a formatos Excel y CSV",
 	"bs-uemoduletable2excel-overview-title": "Exportación a Excel.",
+	"bs-uemoduletable2excel-overview-description": "Exporta a Excel las tablas de las páginas especiales y de las páginas de contenido.",
 	"bs-uemoduletable2excel-overview-bodycontent": "Este módulo permite exportar a Excel."
 }
