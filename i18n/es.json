@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fitoschido",
-			"DiegoAmbrocio"
+			"DiegoAmbrocio",
+			"Fitoschido"
 		]
 	},
 	"bs-uemoduletable2excel-extension-description": "Permite exportar a formatos Excel y CSV",
