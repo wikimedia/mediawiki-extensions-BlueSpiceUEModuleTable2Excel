@@ -162,7 +162,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 			$aOptions['Creator'] = $GLOBALS['wgSitename'];
 			$aOptions['LastModifiedBy'] = $GLOBALS['wgSitename'];
 		} else {
-			$oWikiPage = WikiPage::factory( $oTitle );
+			$oWikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $oTitle );
 			$util = MediaWikiServices::getInstance()->getService( 'BSUtilityFactory' );
 
 			$aOptions['Creator'] = $util->getUserHelper(
