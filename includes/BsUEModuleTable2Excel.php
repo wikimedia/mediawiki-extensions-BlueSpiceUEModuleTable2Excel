@@ -213,8 +213,8 @@ class BsUEModuleTable2Excel extends ExportModule {
 
 		// replace images with teir alt texts
 		$sContent = preg_replace(
-			'#< ?img.*?.alt=(\'|")(.*?)(\'|") .*?>#s',
-			'$2',
+			'#<img src=(\'|")(.*?)(\'|") alt=(\'|")(.*?)(\'|")([^>]*?)>#s',
+			'$5',
 			$sContent
 		);
 
