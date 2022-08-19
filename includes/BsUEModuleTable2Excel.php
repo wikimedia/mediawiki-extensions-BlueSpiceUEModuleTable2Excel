@@ -169,8 +169,8 @@ class BsUEModuleTable2Excel extends ExportModule {
 				$oWikiPage->getCreator()
 			)->getDisplayName();
 
-			if ( $oWikiPage->getRevision() ) {
-				$lastEditor = $oWikiPage->getRevision()->getUser();
+			if ( $oWikiPage->getRevisionRecord() ) {
+				$lastEditor = $oWikiPage->getRevisionRecord()->getUser();
 				// sometimes this is an id - possible bug in mw version
 				if ( is_int( $lastEditor ) ) {
 					$lastEditor = \User::newFromId( $lastEditor );
