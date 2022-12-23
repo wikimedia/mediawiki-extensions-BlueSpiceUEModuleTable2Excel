@@ -44,7 +44,8 @@ class BsUEModuleTable2Excel extends ExportModule {
 			$sContent = $this->prepareHTML( $sContent );
 		}
 
-		MediaWikiServices::getInstance()->getHookContainer()->run(
+		$services = MediaWikiServices::getInstance();
+		$services->getHookContainer()->run(
 			'BsUEModuleTable2ExcelBeforeProcess',
 			[
 				$this,
@@ -121,7 +122,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 		}
 
 		$oWriter->save( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
-		$sMimeType = MediaWikiServices::getInstance()->getMimeAnalyzer()
+		$sMimeType = $services->getMimeAnalyzer()
 			->getMimeTypeFromExtensionOrNull( $sModeTo ) ?? MEDIATYPE_UNKNOWN;
 
 		$aResponse['filename'] = "$tmpFileName.$sModeTo";
@@ -138,9 +139,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 
 		$aResponse['content'] = $oFile->getValue();
 
-		$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig(
-			'bsg'
-		);
+		$config = $services->getConfigFactory()->makeConfig( 'bsg' );
 
 		if ( !$config->get( 'TestMode' ) ) {
 			unlink( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
@@ -162,8 +161,9 @@ class BsUEModuleTable2Excel extends ExportModule {
 			$aOptions['Creator'] = $GLOBALS['wgSitename'];
 			$aOptions['LastModifiedBy'] = $GLOBALS['wgSitename'];
 		} else {
-			$oWikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $oTitle );
-			$util = MediaWikiServices::getInstance()->getService( 'BSUtilityFactory' );
+			$services = MediaWikiServices::getInstance();
+			$oWikiPage = $services->getWikiPageFactory()->newFromTitle( $oTitle );
+			$util = $services->getService( 'BSUtilityFactory' );
 
 			$aOptions['Creator'] = $util->getUserHelper(
 				$oWikiPage->getCreator()
@@ -173,7 +173,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 				$lastEditor = $oWikiPage->getRevisionRecord()->getUser();
 				// sometimes this is an id - possible bug in mw version
 				if ( is_int( $lastEditor ) ) {
-					$lastEditor = \User::newFromId( $lastEditor );
+					$lastEditor = $services->getUserFactory()->newFromId( $lastEditor );
 				}
 				$aOptions['LastModifiedBy'] = $util->getUserHelper(
 					$lastEditor
