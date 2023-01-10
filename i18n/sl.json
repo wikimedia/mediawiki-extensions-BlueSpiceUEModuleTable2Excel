@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Omogoča izvoz v formate Excel in CSV",
+	"bs-uemoduletable2excel-overview-title": "Izvoz v Excel",
+	"bs-uemoduletable2excel-overview-description": "Izvozi strani (posebne strani in strani z vsebino) v Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Ta modul omogoča izvoz v Excel."
+}
