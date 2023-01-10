@@ -32,5 +32,10 @@
 	},
 	"extra": {
 		"installer-name": "BlueSpiceUEModuleTable2Excel"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
 	}
 }
