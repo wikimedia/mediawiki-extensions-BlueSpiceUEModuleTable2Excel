@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Leidžia eksportuoti į Excel formatus ir CSV",
+	"bs-uemoduletable2excel-overview-title": "Excel eksportavimas",
+	"bs-uemoduletable2excel-overview-description": "Eksportuoja lenteles iš specialių puslapių ir turinio puslapius į Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Šis modulis leidžia eksportuoti į Excel."
+}
