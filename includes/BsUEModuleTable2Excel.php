@@ -165,16 +165,14 @@ class BsUEModuleTable2Excel extends ExportModule {
 			$oWikiPage = $services->getWikiPageFactory()->newFromTitle( $oTitle );
 			$util = $services->getService( 'BSUtilityFactory' );
 
+			$user = $services->getUserFactory()->newFromId( $oWikiPage->getCreator()->getId() );
 			$aOptions['Creator'] = $util->getUserHelper(
-				$oWikiPage->getCreator()
+				$user
 			)->getDisplayName();
 
 			if ( $oWikiPage->getRevisionRecord() ) {
-				$lastEditor = $oWikiPage->getRevisionRecord()->getUser();
-				// sometimes this is an id - possible bug in mw version
-				if ( is_int( $lastEditor ) ) {
-					$lastEditor = $services->getUserFactory()->newFromId( $lastEditor );
-				}
+				$lastEditorId = $oWikiPage->getRevisionRecord()->getUser()->getId();
+				$lastEditor = $services->getUserFactory()->newFromId( $lastEditorId );
 				$aOptions['LastModifiedBy'] = $util->getUserHelper(
 					$lastEditor
 				)->getDisplayName();
