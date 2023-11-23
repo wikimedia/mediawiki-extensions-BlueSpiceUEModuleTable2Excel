@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Romaine",
-			"McDutchie"
+			"McDutchie",
+			"Romaine"
 		]
 	},
 	"bs-uemoduletable2excel-extension-description": "Maakt export in Excel-indelingen en CSV mogelijk",
