@@ -243,12 +243,18 @@ class BsUEModuleTable2Excel extends ExportModule {
 		$sContent = preg_replace( "/<thead>\s*<\/thead>/", "", $sContent );
 		$docType = '-//W3C//DTD HTML 4.01 Transitional//EN';
 
+		// A sitename with more than 31 characters breaks the export
+		$sitename = $wgSitename;
+		if ( strlen( $sitename ) > 31 ) {
+			$sitename = substr( $sitename, 0, 31 );
+		}
+
 		return <<<EOT
 <!DOCTYPE HTML PUBLIC "$docType" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<title>$wgSitename</title>
+		<title>$sitename</title>
 	</head>
 	<body>
 		$sContent
