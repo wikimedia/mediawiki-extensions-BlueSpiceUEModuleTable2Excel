@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yurina Tatiana"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Позволяет экспортировать в форматы Excel и CSV",
+	"bs-uemoduletable2excel-overview-title": "Экспорт в Excel",
+	"bs-uemoduletable2excel-overview-description": "Экспортирует таблицы со служебных страниц и страниц содержимого в Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Этот модуль позволяет экспортировать в Excel."
+}
