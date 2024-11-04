@@ -2,12 +2,45 @@
 
 use BlueSpice\UniversalExport\ExportModule;
 use BlueSpice\UniversalExport\ExportSpecification;
+use BlueSpice\VisualEditorConnector\ColorMapper;
 use MediaWiki\MediaWikiServices;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 
 class BsUEModuleTable2Excel extends ExportModule {
+
+	public const MARKER_WRAPPER = '%%';
+	public const TAG_BOLD = 'b';
+	public const TAG_ITALIC = 'i';
+	public const TAG_STRIKETHROUGH = 's';
+	public const TAG_UNDERLINE = 'u';
+
+	public const MARKER_BOLD = self::MARKER_WRAPPER . self::TAG_BOLD . self::MARKER_WRAPPER;
+	public const MARKER_ITALIC = self::MARKER_WRAPPER . self::TAG_ITALIC . self::MARKER_WRAPPER;
+	public const MARKER_STRIKETHROUGH = self::MARKER_WRAPPER . self::TAG_STRIKETHROUGH . self::MARKER_WRAPPER;
+	public const MARKER_UNDERLINE = self::MARKER_WRAPPER . self::TAG_UNDERLINE . self::MARKER_WRAPPER;
+
+	/** @var array */
+	protected array $colorMarkers = [];
+
+	/**
+	 * @inheritDoc
+	 */
+	public function __construct(
+		$name, MediaWikiServices $services, Config $config, WebRequest $request
+	) {
+		parent::__construct( $name, $services, $config, $request );
+		$this->buildColorMarkers();
+	}
+
+	private function buildColorMarkers() {
+		foreach ( ColorMapper::COLORS as $class => $code ) {
+			$this->colorMarkers[$class] = self::MARKER_WRAPPER . $code . self::MARKER_WRAPPER;
+		}
+	}
 
 	/**
 	 * Implementation of BsUniversalExportModule interface.
@@ -194,53 +227,32 @@ class BsUEModuleTable2Excel extends ExportModule {
 	}
 
 	/**
-	 *
-	 * @param string $sContent
+	 * @param string $content
 	 * @return string
 	 */
-	protected function prepareHTML( $sContent ) {
+	protected function prepareHTML( $content ) {
 		global $wgArticlePath, $wgServer, $wgSitename;
 
 		$sPath = str_replace( '$1', '', $wgArticlePath );
 		// replace relative links /1.23/index.php?title=Main_Page
-		$sContent = preg_replace(
+		$content = preg_replace(
 			'#href="(' . str_replace( '?', '.', $sPath ) . ')(.*?)"#s',
 			'href="' . $wgServer . $sPath . '$2"',
-			$sContent
+			$content
 		);
 
-		// replace images with teir alt texts
-		$sContent = preg_replace_callback(
-			'#<img(.*?)/?>#',
-			static function ( $matches ) {
-				$altText = '';
+		$content = $this->replaceImagesWithAltText( $content );
+		$content = $this->replaceStyleTags( $content );
 
-				$attribs = [];
-				preg_match_all( '#\s*(.*?)=\"(.*?)\"\s*#', $matches[1], $attribs );
-
-				if ( !empty( $attribs ) ) {
-					$index = array_search( 'alt', $attribs[1] );
-					if ( $index !== false ) {
-						$altText = $attribs[2][$index];
-					}
-				}
-				return $altText;
-			},
-			$sContent
-		);
-
-		// pwirth: in php versions smaller than 5.4 there is no ENT_HTML401 flag :(
-		if ( defined( ENT_HTML401 ) ) {
-			$sContent = htmlspecialchars( $sContent, ENT_HTML401, 'UTF-8' );
-			$sContent = html_entity_decode( $sContent, ENT_HTML401, 'UTF-8' );
-		}
-		$sContent = str_replace( '&nbsp;', '', $sContent );
-		$sContent = preg_replace(
+		$content = htmlspecialchars( $content, ENT_HTML401, 'UTF-8' );
+		$content = html_entity_decode( $content, ENT_HTML401, 'UTF-8' );
+		$content = str_replace( '&nbsp;', '', $content );
+		$content = preg_replace(
 			"/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/",
 			"\n",
-			$sContent
+			$content
 		);
-		$sContent = preg_replace( "/<thead>\s*<\/thead>/", "", $sContent );
+		$content = preg_replace( "/<thead>\s*<\/thead>/", "", $content );
 		$docType = '-//W3C//DTD HTML 4.01 Transitional//EN';
 
 		// A sitename with more than 31 characters breaks the export
@@ -257,10 +269,129 @@ class BsUEModuleTable2Excel extends ExportModule {
 		<title>$sitename</title>
 	</head>
 	<body>
-		$sContent
+		$content
 	</body>
 </html>
 EOT;
+	}
+
+	/**
+	 * Replaces image tags with their alt text
+	 *
+	 * @param string $content
+	 * @return string
+	 */
+	private function replaceImagesWithAltText( $content ) {
+		return preg_replace_callback(
+			'#<img(.*?)/?>#',
+			static function ( $matches ) {
+				$altText = '';
+
+				$attribs = [];
+				preg_match_all( '#\s*(.*?)=\"(.*?)\"\s*#', $matches[1], $attribs );
+
+				if ( !empty( $attribs ) ) {
+					$index = array_search( 'alt', $attribs[1] );
+					if ( $index !== false ) {
+						$altText = $attribs[2][$index];
+					}
+				}
+				return $altText;
+			},
+			$content
+		) ?: $content;
+	}
+
+	/**
+	 * @param string $content
+	 * @return string
+	 */
+	public function replaceStyleTags( string $content ): string {
+		$dom = new DOMDocument();
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$success = @$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		if ( !$success ) {
+			return $content;
+		}
+
+		$tdElements = $dom->getElementsByTagName( 'td' );
+
+		foreach ( $tdElements as $td ) {
+			// Clear the existing content
+			$innerHTML = '';
+			foreach ( $td->childNodes as $child ) {
+				$innerHTML .= $this->processNode( $child );
+			}
+
+			// Set the new content with markers
+			$td->nodeValue = '';
+			$td->appendChild( $dom->createTextNode( $innerHTML ) );
+		}
+
+		return $dom->saveHTML() ?: $content;
+	}
+
+	/**
+	 * @param DOMNode $node
+	 * @return string
+	 */
+	private function processNode( DOMNode $node ): string {
+		if ( $node->nodeType === XML_TEXT_NODE ) {
+			return $node->textContent;
+		}
+
+		$output = '';
+
+		if ( $node->nodeType === XML_ELEMENT_NODE ) {
+			/** @var DOMElement $node */
+			$tagName = $node->tagName;
+
+			// Recursively process child nodes
+			foreach ( $node->childNodes as $child ) {
+				$output .= $this->processNode( $child );
+			}
+
+			// Wrap output with markers based on the tag
+			switch ( $tagName ) {
+				case self::TAG_BOLD:
+					$output = self::MARKER_BOLD . $output . self::MARKER_BOLD;
+					break;
+				case self::TAG_ITALIC:
+					$output = self::MARKER_ITALIC . $output . self::MARKER_ITALIC;
+					break;
+				case self::TAG_STRIKETHROUGH:
+					$output = self::MARKER_STRIKETHROUGH . $output . self::MARKER_STRIKETHROUGH;
+					break;
+				case self::TAG_UNDERLINE:
+					$output = self::MARKER_UNDERLINE . $output . self::MARKER_UNDERLINE;
+					break;
+				case 'span':
+					// Check for specific color class in the span element
+					$output = $this->replaceColorSpans( $node, $output );
+					break;
+			}
+		}
+
+		return $output;
+	}
+
+	/**
+	 * @param DOMElement $node
+	 * @param string $output
+	 * @return string
+	 */
+	public function replaceColorSpans( DOMElement $node, string $output ): string {
+		if ( $node->hasAttribute( 'class' ) ) {
+			$spanClass = $node->getAttribute( 'class' );
+
+			// Check if the class exists in ColorMapper::COLORS
+			if ( array_key_exists( $spanClass, ColorMapper::COLORS ) ) {
+				$colorMarker = $this->colorMarkers[$spanClass];
+				return $colorMarker . $output . $colorMarker;
+			}
+		}
+
+		return $output;
 	}
 
 	/**
@@ -275,32 +406,185 @@ EOT;
 		$sLastCol = $spreadsheet->getActiveSheet()->getHighestColumn();
 		$iLastRow = $spreadsheet->getActiveSheet()->getHighestRow();
 		$bFirstRowEmptyForNoReason = true;
+
 		$sLastCol++;
 		for ( $sCol = 'A'; $sCol != $sLastCol; $sCol++ ) {
 			for ( $iRow = 1; $iRow <= $iLastRow; $iRow++ ) {
-				$cell = $spreadsheet->getActiveSheet()->getCell(
-					"$sCol$iRow"
-				);
-				$sVal = trim( $cell->getValue() );
-				$sVal = $this->stripPotentialFormula( $sVal );
-				if ( $iRow == 1 && !empty( $sVal ) ) {
+				$cell = $spreadsheet->getActiveSheet()->getCell( "$sCol$iRow" );
+				$val = trim( $cell->getValue() );
+
+				// Replace markers if present
+				if ( str_contains( $val, self::MARKER_BOLD ) ||
+					str_contains( $val, self::MARKER_ITALIC ) ||
+					str_contains( $val, self::MARKER_STRIKETHROUGH ) ||
+					str_contains( $val, self::MARKER_UNDERLINE ) ||
+					$this->stringInArray( $val, array_values( $this->colorMarkers ) )
+				) {
+					$richText = $this->replaceStyleMarkers( $val );
+					$cell->setValue( $richText );
+					$bFirstRowEmptyForNoReason = false;
+					continue;
+				}
+
+				$val = $this->stripPotentialFormula( $val );
+				if ( $iRow == 1 && !empty( $val ) ) {
 					$bFirstRowEmptyForNoReason = false;
 				}
+
 				$sModeTo = $specs->getParam( 'ModeTo', 'xls' );
 				if ( $sModeTo == 'csv' && !empty( $aOptions['Delimiter'] ) ) {
 					// Remove csv Delimiter from cell content or it counts as
 					// new cell
-					$sVal = str_replace( $aOptions['Delimiter'], '', $sVal );
+					$val = str_replace( $aOptions['Delimiter'], '', $val );
 				}
-				$sVal = trim( $sVal );
-				$sVal = $this->stripPotentialFormula( $sVal );
-				$cell->setValue( $sVal );
+
+				$val = trim( $val );
+				$cell->setValue( $val );
 			}
 		}
+
 		// Remove first row, when it is empty for unknown reason
 		if ( $bFirstRowEmptyForNoReason ) {
 			$spreadsheet->getActiveSheet()->removeRow( 1, 1 );
 		}
+	}
+
+	/**
+	 * @param string $value
+	 * @param array $colorMarkers
+	 * @return bool
+	 */
+	private function stringInArray( string $value, array $colorMarkers ): bool {
+		foreach ( $colorMarkers as $marker ) {
+			if ( str_contains( $value, $marker ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Replace bold, italic, strikethrough, underline and color markers in the string and return a RichText object
+	 *
+	 * @param string $value The string containing bold, italic, strikethrough, underline and color markers
+	 * @return RichText
+	 */
+	public function replaceStyleMarkers( string $value ): RichText {
+		$richText = new RichText();
+
+		// Dynamically create a regex pattern for color markers
+		$colorMarkers = array_values( $this->colorMarkers );
+		$colorMarkersRegex = implode( '|', array_map( 'preg_quote', $colorMarkers ) );
+
+		// Combine all markers into a regex pattern
+		$b = preg_quote( self::MARKER_BOLD );
+		$i = preg_quote( self::MARKER_ITALIC );
+		$s = preg_quote( self::MARKER_STRIKETHROUGH );
+		$u = preg_quote( self::MARKER_UNDERLINE );
+
+		// Create the final regex pattern
+		$pattern = "/($b|$i|$s|$u|$colorMarkersRegex)/";
+
+		// Split the string by markers
+		$segments = preg_split( $pattern, $value, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+
+		// Array to track style states
+		$styleStates = [
+			'bold' => false,
+			'italic' => false,
+			'strikethrough' => false,
+			'underline' => false,
+			'color' => null
+		];
+
+		foreach ( $segments as $segment ) {
+			if ( !$segment ) {
+				continue;
+			}
+			if ( $this->isStyleMarker( $segment ) ) {
+				$this->toggleStyleState( $styleStates, $segment );
+				continue;
+			}
+
+			// Create a new TextRun for each segment
+			$textRun = $richText->createTextRun( $segment );
+			$font = $textRun->getFont();
+
+			// Apply styles based on the current state
+			$font->setBold( $styleStates['bold'] );
+			$font->setItalic( $styleStates['italic'] );
+			$font->setStrikethrough( $styleStates['strikethrough'] );
+			$font->setUnderline( $styleStates['underline'] );
+
+			if ( isset( $styleStates['color'] ) ) {
+				$font->setColor( new Color( "FF{$styleStates['color']}" ) );
+			}
+		}
+
+		return $richText;
+	}
+
+	/**
+	 * Toggle the style states based on the segment
+	 *
+	 * @param array &$styleStates Current style states
+	 * @param string $segment The segment containing the style marker
+	 */
+	public function toggleStyleState( array &$styleStates, string $segment ) {
+		switch ( $segment ) {
+			case self::MARKER_BOLD:
+				$styleStates['bold'] = !$styleStates['bold'];
+				break;
+			case self::MARKER_ITALIC:
+				$styleStates['italic'] = !$styleStates['italic'];
+				break;
+			case self::MARKER_STRIKETHROUGH:
+				$styleStates['strikethrough'] = !$styleStates['strikethrough'];
+				break;
+			case self::MARKER_UNDERLINE:
+				$styleStates['underline'] = !$styleStates['underline'];
+				break;
+			default:
+				// Handle colors dynamically based on ColorMapper
+				foreach ( $this->colorMarkers as $class => $marker ) {
+					if ( $segment == $marker ) {
+						$colorCode = ColorMapper::COLORS[$class];
+						// If the current color is already set, unset it
+						if ( isset( $styleStates['color'] ) &&
+							$styleStates['color'] === $colorCode
+						) {
+							unset( $styleStates['color'] );
+						} else {
+							// Otherwise, set it to the new color
+							$styleStates['color'] = $colorCode;
+						}
+						break;
+					}
+				}
+				break;
+		}
+	}
+
+	/**
+	 * Check if the segment is a style marker
+	 *
+	 * @param string $segment The segment to check
+	 * @return bool
+	 */
+	public function isStyleMarker( string $segment ): bool {
+		// Combine static markers with dynamic color markers from $this->colorMarkers
+		$allMarkers = array_merge(
+			[
+				self::MARKER_BOLD,
+				self::MARKER_ITALIC,
+				self::MARKER_STRIKETHROUGH,
+				self::MARKER_UNDERLINE
+			],
+			array_values( $this->colorMarkers )
+		);
+
+		return in_array( $segment, $allMarkers );
 	}
 
 	/**
