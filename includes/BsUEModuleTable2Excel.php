@@ -4,6 +4,7 @@ use BlueSpice\UniversalExport\ExportModule;
 use BlueSpice\UniversalExport\ExportSpecification;
 use BlueSpice\VisualEditorConnector\ColorMapper;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
