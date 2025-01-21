@@ -5,10 +5,10 @@ namespace BlueSpice\UEModuleTable2Excel\Tests;
 use BlueSpice\VisualEditorConnector\ColorMapper;
 use BsUEModuleTable2Excel;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PHPUnit\Framework\TestCase;
-use WebRequest;
 
 class BsUEModuleTable2ExcelTest extends TestCase {
 
