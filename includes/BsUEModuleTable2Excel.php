@@ -4,6 +4,7 @@ use BlueSpice\UniversalExport\ExportModule;
 use BlueSpice\UniversalExport\ExportSpecification;
 use BlueSpice\VisualEditorConnector\ColorMapper;
 use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Request\WebRequest;
 use PhpOffice\PhpSpreadsheet\IOFactory;
