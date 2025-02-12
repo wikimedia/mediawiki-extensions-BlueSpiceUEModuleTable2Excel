@@ -1,20 +1,25 @@
 <?php
 
-use BlueSpice\UniversalExport\ExportModule;
-use BlueSpice\UniversalExport\ExportSpecification;
+namespace BlueSpice\UEModuleTable2Excel;
+
 use BlueSpice\VisualEditorConnector\ColorMapper;
-use MediaWiki\Config\Config;
-use MediaWiki\Config\ConfigException;
+use BsFileSystemHelper;
+use DOMDocument;
+use DOMElement;
+use DOMNode;
+use Exception;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Context\RequestContext;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Request\WebRequest;
+use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Language\FormatterFactory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use Wikimedia\Mime\MimeAnalyzer;
 
-class BsUEModuleTable2Excel extends ExportModule {
+class BsUEModuleTable2Excel {
 
 	public const MARKER_WRAPPER = '%%';
 	public const TAG_BOLD = 'b';
@@ -30,13 +35,26 @@ class BsUEModuleTable2Excel extends ExportModule {
 	/** @var array */
 	protected array $colorMarkers = [];
 
-	/**
-	 * @inheritDoc
-	 */
+	/** @var ConfigFactory */
+	protected $configFactory;
+
+	/** @var HookContainer */
+	protected $hookContainer;
+
+	/** @var MimeAnalyzer */
+	protected $mimeAnalyzer;
+
+	/** @var FormatterFactory */
+	protected $formatterFactory;
+
 	public function __construct(
-		$name, MediaWikiServices $services, Config $config, WebRequest $request
+		ConfigFactory $configFactory, HookContainer $hookContainer,
+		MimeAnalyzer $mimeAnalyer, FormatterFactory $formatterFactory
 	) {
-		parent::__construct( $name, $services, $config, $request );
+		$this->configFactory = $configFactory;
+		$this->hookContainer = $hookContainer;
+		$this->mimeAnalyzer = $mimeAnalyer;
+		$this->formatterFactory = $formatterFactory;
 		$this->buildColorMarkers();
 	}
 
@@ -49,6 +67,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 	/**
 	 * Implementation of BsUniversalExportModule interface.
 	 * @param ExportSpecification &$specification
+	 * @param string $content
 	 * @return array array(
 	 *     'mime-type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	 *     'filename' => 'Filename.docx',
@@ -59,175 +78,138 @@ class BsUEModuleTable2Excel extends ExportModule {
 	 * @throws MWException
 	 * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
 	 */
-	public function createExportFile( ExportSpecification &$specification ) {
-		$aResponse = [];
-		$sModeFrom = strtolower( RequestContext::getMain()->getRequest()->getVal(
-			'ModeFrom',
-			'html'
-		) );
-		$sModeTo = strtolower( RequestContext::getMain()->getRequest()->getVal(
-			'ModeTo',
-			'xls'
-		) );
-		$sContent = RequestContext::getMain()->getRequest()->getVal( 'content', '' );
+	public function createExportFile( ExportSpecification &$specification, string $content ) {
+		$response = [];
+		$modeFrom = $specification->getModeFrom();
+		$modeTo = $specification->getModeTo();
+		$formatter = $this->formatterFactory->getStatusFormatter( RequestContext::getMain() );
 
-		$aOptions = array_merge_recursive(
-			$this->getDefaultOptions( $specification ),
-			RequestContext::getMain()->getRequest()->getArray( 'options', [] )
-		);
+		$options = $this->getDefaultOptions();
+
 		$tmpFileName = time();
 
-		if ( $sModeFrom == 'html' ) {
-			$sContent = $this->prepareHTML( $sContent );
+		if ( $modeFrom == 'html' ) {
+			$content = $this->prepareHTML( $content );
 		}
 
-		$services = MediaWikiServices::getInstance();
-		$services->getHookContainer()->run(
+		$this->hookContainer->run(
 			'BsUEModuleTable2ExcelBeforeProcess',
 			[
 				$this,
-				&$sModeFrom,
-				&$sModeTo,
-				&$sContent,
+				&$modeFrom,
+				&$modeTo,
+				&$content,
 				&$tmpFileName
 			]
 		);
 
-		$oStatus = BsFileSystemHelper::saveToCacheDirectory(
-			"$tmpFileName.$sModeFrom",
-			$sContent,
+		$status = BsFileSystemHelper::saveToCacheDirectory(
+			"$tmpFileName.$modeFrom",
+			$content,
 			'UEModuleTable2Excel'
 		);
 
-		if ( !$oStatus->isGood() ) {
-			throw new Exception( $oStatus->getMessage() );
+		if ( !$status->isGood() ) {
+			throw new Exception( $formatter->getMessage( $status ) );
 		}
 
 		try {
-			$oReader = IOFactory::createReaderForFile(
-				"{$oStatus->getValue()}/$tmpFileName.$sModeFrom"
+			$reader = IOFactory::createReaderForFile(
+				"{$status->getValue()}/$tmpFileName.$modeFrom"
 			);
 		} catch ( Exception $e ) {
-			throw new Exception( "Unsupported mode $sModeFrom" );
+			throw new Exception( "Unsupported mode $modeFrom" );
 		}
 
-		// $oReader->load( "$tmpFileName.$sModeFrom" );
-		$oReader instanceof Html;
+		$reader instanceof Html;
 		// apply reader options
-		foreach ( $aOptions as $key => $val ) {
+		foreach ( $options as $key => $val ) {
 			$sFName = "set$key";
-			if ( !method_exists( $oReader, $sFName ) ) {
+			if ( !method_exists( $reader, $sFName ) ) {
 				continue;
 			}
 			call_user_func(
-				[ $oReader, $sFName ],
+				[ $reader, $sFName ],
 				$val
 			);
 		}
-		$spreadsheet = $oReader->load(
-			"{$oStatus->getValue()}/$tmpFileName.$sModeFrom"
+		$spreadsheet = $reader->load(
+			"{$status->getValue()}/$tmpFileName.$modeFrom"
 		);
 
-		$oProperties = $spreadsheet->getProperties();
+		$properties = $spreadsheet->getProperties();
 
 		// apply properties
-		foreach ( $aOptions as $key => $val ) {
+		foreach ( $options as $key => $val ) {
 			$sFName = "set$key";
-			if ( !method_exists( $oProperties, $sFName ) ) {
+			if ( !method_exists( $properties, $sFName ) ) {
 				continue;
 			}
 			call_user_func(
-				[ $oProperties, $sFName ],
+				[ $properties, $sFName ],
 				$val
 			);
 		}
 
-		$this->adjustCellContent( $spreadsheet, $specification, $aOptions );
+		$this->adjustCellContent( $spreadsheet, $specification, $options );
 
-		$oWriter = IOFactory::createWriter( $spreadsheet, ucfirst( $sModeTo ) );
+		$writer = IOFactory::createWriter( $spreadsheet, ucfirst( $modeTo ) );
 
 		// apply writer options
-		foreach ( $aOptions as $key => $val ) {
+		foreach ( $options as $key => $val ) {
 			$sFName = "set$key";
-			if ( !method_exists( $oWriter, $sFName ) ) {
+			if ( !method_exists( $writer, $sFName ) ) {
 				continue;
 			}
 			call_user_func(
-				[ $oWriter, $sFName ],
+				[ $writer, $sFName ],
 				$val
 			);
 		}
 
-		$oWriter->save( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
-		$sMimeType = $services->getMimeAnalyzer()
-			->getMimeTypeFromExtensionOrNull( $sModeTo ) ?? MEDIATYPE_UNKNOWN;
+		$writer->save( "{$status->getValue()}/$tmpFileName.$modeTo" );
+		$sMimeType = $this->mimeAnalyzer
+			->getMimeTypeFromExtensionOrNull( $modeTo ) ?? MEDIATYPE_UNKNOWN;
 
-		$aResponse['filename'] = "$tmpFileName.$sModeTo";
-		$aResponse['mime-type'] = $sMimeType;
+		$response['filename'] = "$tmpFileName.$modeTo";
+		$response['mime-type'] = $sMimeType;
 
-		$oFile = BsFileSystemHelper::getCacheFileContent(
-			"$tmpFileName.$sModeTo",
+		$file = BsFileSystemHelper::getCacheFileContent(
+			"$tmpFileName.$modeTo",
 			'UEModuleTable2Excel'
 		);
 
-		if ( !$oFile->isGood() ) {
-			throw new Exception( $oFile->getMessage() );
+		if ( !$file->isGood() ) {
+			throw new Exception( $formatter->getMessage( $file ) );
 		}
 
-		$aResponse['content'] = $oFile->getValue();
+		$response['content'] = $file->getValue();
 
-		$config = $services->getConfigFactory()->makeConfig( 'bsg' );
+		$config = $this->configFactory->makeConfig( 'bsg' );
 
 		if ( !$config->get( 'TestMode' ) ) {
-			unlink( "{$oStatus->getValue()}/$tmpFileName.$sModeTo" );
-			unlink( "{$oStatus->getValue()}/$tmpFileName.$sModeFrom" );
+			unlink( "{$status->getValue()}/$tmpFileName.$modeTo" );
+			unlink( "{$status->getValue()}/$tmpFileName.$modeFrom" );
 		}
-		return $aResponse;
+		return $response;
 	}
 
 	/**
 	 *
-	 * @param ExportSpecification $specification
-	 * @param array $aOptions
+	 * @param array $options
 	 * @return array
 	 */
-	protected function getDefaultOptions( ExportSpecification $specification, $aOptions = [] ) {
-		$oTitle = $specification->getTitle();
+	protected function getDefaultOptions( $options = [] ) {
+		$options['Description'] = '';
+		$options['Keywords'] = '';
+		$options['Category'] = '';
 
-		if ( $oTitle->getNamespace() < 0 ) {
-			$aOptions['Creator'] = $GLOBALS['wgSitename'];
-			$aOptions['LastModifiedBy'] = $GLOBALS['wgSitename'];
-		} else {
-			$services = MediaWikiServices::getInstance();
-			$oWikiPage = $services->getWikiPageFactory()->newFromTitle( $oTitle );
-			$util = $services->getService( 'BSUtilityFactory' );
+		$options['Delimiter'] = ';';
+		$options['Enclosure'] = '';
+		$options['LineEnding'] = "\r\n";
+		$options['InputEncoding'] = 'UTF-8';
 
-			$user = $services->getUserFactory()->newFromId( $oWikiPage->getCreator()->getId() );
-			$aOptions['Creator'] = $util->getUserHelper(
-				$user
-			)->getDisplayName();
-
-			if ( $oWikiPage->getRevisionRecord() ) {
-				$lastEditorId = $oWikiPage->getRevisionRecord()->getUser()->getId();
-				$lastEditor = $services->getUserFactory()->newFromId( $lastEditorId );
-				$aOptions['LastModifiedBy'] = $util->getUserHelper(
-					$lastEditor
-				)->getDisplayName();
-			}
-		}
-
-		$aOptions['Title'] = $oTitle->getFullText();
-		$aOptions['Subject'] = $oTitle->getFullText();
-		$aOptions['Description'] = '';
-		$aOptions['Keywords'] = '';
-		$aOptions['Category'] = '';
-
-		$aOptions['Delimiter'] = ';';
-		$aOptions['Enclosure'] = '';
-		$aOptions['LineEnding'] = "\r\n";
-		$aOptions['InputEncoding'] = 'UTF-8';
-
-		return $aOptions;
+		return $options;
 	}
 
 	/**
@@ -235,13 +217,11 @@ class BsUEModuleTable2Excel extends ExportModule {
 	 * @return string
 	 */
 	protected function prepareHTML( $content ) {
-		global $wgArticlePath, $wgServer, $wgSitename;
-
-		$sPath = str_replace( '$1', '', $wgArticlePath );
+		$path = str_replace( '$1', '', $GLOBALS['wgArticlePath'] );
 		// replace relative links /1.23/index.php?title=Main_Page
 		$content = preg_replace(
-			'#href="(' . str_replace( '?', '.', $sPath ) . ')(.*?)"#s',
-			'href="' . $wgServer . $sPath . '$2"',
+			'#href="(' . str_replace( '?', '.', $path ) . ')(.*?)"#s',
+			'href="' . $GLOBALS['wgServer'] . $path . '$2"',
 			$content
 		);
 
@@ -260,7 +240,7 @@ class BsUEModuleTable2Excel extends ExportModule {
 		$docType = '-//W3C//DTD HTML 4.01 Transitional//EN';
 
 		// A sitename with more than 31 characters breaks the export
-		$sitename = $wgSitename;
+		$sitename = $GLOBALS['wgSitename'];
 		if ( strlen( $sitename ) > 31 ) {
 			$sitename = substr( $sitename, 0, 31 );
 		}
@@ -402,19 +382,19 @@ EOT;
 	 *
 	 * @param Spreadsheet $spreadsheet
 	 * @param ExportSpecification $specs
-	 * @param array $aOptions
+	 * @param array $options
 	 */
 	protected function adjustCellContent(
-		Spreadsheet $spreadsheet, ExportSpecification $specs, $aOptions
+		Spreadsheet $spreadsheet, ExportSpecification $specs, $options
 	) {
-		$sLastCol = $spreadsheet->getActiveSheet()->getHighestColumn();
-		$iLastRow = $spreadsheet->getActiveSheet()->getHighestRow();
-		$bFirstRowEmptyForNoReason = true;
+		$lastCol = $spreadsheet->getActiveSheet()->getHighestColumn();
+		$lastRow = $spreadsheet->getActiveSheet()->getHighestRow();
+		$firstRowEmptyForNoReason = true;
 
-		$sLastCol++;
-		for ( $sCol = 'A'; $sCol != $sLastCol; $sCol++ ) {
-			for ( $iRow = 1; $iRow <= $iLastRow; $iRow++ ) {
-				$cell = $spreadsheet->getActiveSheet()->getCell( "$sCol$iRow" );
+		$lastCol++;
+		for ( $col = 'A'; $col != $lastCol; $col++ ) {
+			for ( $row = 1; $row <= $lastRow; $row++ ) {
+				$cell = $spreadsheet->getActiveSheet()->getCell( "$col$row" );
 				$val = trim( $cell->getValue() );
 
 				// Replace markers if present
@@ -426,20 +406,20 @@ EOT;
 				) {
 					$richText = $this->replaceStyleMarkers( $val );
 					$cell->setValue( $richText );
-					$bFirstRowEmptyForNoReason = false;
+					$firstRowEmptyForNoReason = false;
 					continue;
 				}
 
 				$val = $this->stripPotentialFormula( $val );
-				if ( $iRow == 1 && !empty( $val ) ) {
-					$bFirstRowEmptyForNoReason = false;
+				if ( $row == 1 && !empty( $val ) ) {
+					$firstRowEmptyForNoReason = false;
 				}
 
-				$sModeTo = $specs->getParam( 'ModeTo', 'xls' );
-				if ( $sModeTo == 'csv' && !empty( $aOptions['Delimiter'] ) ) {
+				$modeTo = $specs->getParam( 'ModeTo', 'xls' );
+				if ( $modeTo == 'csv' && !empty( $options['Delimiter'] ) ) {
 					// Remove csv Delimiter from cell content or it counts as
 					// new cell
-					$val = str_replace( $aOptions['Delimiter'], '', $val );
+					$val = str_replace( $options['Delimiter'], '', $val );
 				}
 
 				$val = trim( $val );
@@ -448,7 +428,7 @@ EOT;
 		}
 
 		// Remove first row, when it is empty for unknown reason
-		if ( $bFirstRowEmptyForNoReason ) {
+		if ( $firstRowEmptyForNoReason ) {
 			$spreadsheet->getActiveSheet()->removeRow( 1, 1 );
 		}
 	}
@@ -606,49 +586,5 @@ EOT;
 	 */
 	private function stripPotentialFormula( $rawCellValue ) {
 		return preg_replace( '#^=#', '', $rawCellValue );
-	}
-
-	/**
-	 * Implementation of BsUniversalExportModule interface. Creates an overview
-	 * over the ExportModule
-	 * @return ViewExportModuleOverview
-	 */
-	public function getOverview() {
-		$oModuleOverviewView = new ViewExportModuleOverview();
-		$oModuleOverviewView->setOption(
-			'module-title',
-			wfMessage( 'bs-uemoduletable2excel-overview-title' )->text()
-		);
-		$oModuleOverviewView->setOption(
-			'module-description',
-			wfMessage( 'bs-uemoduletable2excel-overview-description' )->text()
-		);
-		$oModuleOverviewView->setOption(
-			'module-bodycontent',
-			wfMessage( 'bs-uemoduletable2excel-overview-bodycontent' )->text() . '<br/>'
-		);
-
-		return $oModuleOverviewView;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getExportPermission() {
-		return null;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getSubactionHandlers() {
-		return null;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getActionButtonDetails() {
-		return null;
 	}
 }
