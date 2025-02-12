@@ -10,8 +10,7 @@
 	"requires": {
 		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 5.0.0",
-			"BlueSpiceUniversalExport": ">= 5.0.0"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -25,11 +24,6 @@
 					"status": "beta"
 				}
 			}
-		},
-		"BlueSpiceUniversalExport": {
-			"ModuleRegistry": {
-				"table2excel": "\\BsUEModuleTable2Excel::factory"
-			}
 		}
 	},
 	"MessagesDirs": {
@@ -37,12 +31,23 @@
 			"i18n"
 		]
 	},
-	"AutoloadClasses": {
-		"BsUEModuleTable2Excel": "includes/BsUEModuleTable2Excel.php"
-	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\UEModuleTable2Excel\\": "src/"
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"RestRoutes": [
+		{
+			"path": "/table2excel/{modeTo}",
+			"method": "POST",
+			"class": "\\BlueSpice\\UEModuleTable2Excel\\Rest\\Table2Excel",
+			"services": [
+				"MainConfig",
+				"BlueSpiceUEModuleTable2Excel"
+			]
+		}
+	],
 	"load_composer_autoloader": true,
 	"manifest_version": 2
 }

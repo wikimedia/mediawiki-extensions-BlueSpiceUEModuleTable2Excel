@@ -2,10 +2,9 @@
 
 namespace BlueSpice\UEModuleTable2Excel\Tests;
 
+use BlueSpice\UEModuleTable2Excel\BsUEModuleTable2Excel;
 use BlueSpice\VisualEditorConnector\ColorMapper;
-use BsUEModuleTable2Excel;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Request\WebRequest;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PHPUnit\Framework\TestCase;
@@ -59,12 +58,12 @@ class BsUEModuleTable2ExcelTest extends TestCase {
 	 * @return BsUEModuleTable2Excel The BsUEModuleTable2Excel object.
 	 */
 	private function createBsUEModuleTable2Excel() {
-		$name = 'name';
 		$services = MediaWikiServices::getInstance();
-		$config = $services->getMainConfig();
-		$request = $this->createMock( WebRequest::class );
-
-		return new BsUEModuleTable2Excel( $name, $services, $config, $request );
+		$configFactory = $services->getConfigFactory();
+		$hookContainer = $services->getHookContainer();
+		$mimeAnalyzer = $services->getMimeAnalyzer();
+		$formatter = $services->getFormatterFactory();
+		return new BsUEModuleTable2Excel( $configFactory, $hookContainer, $mimeAnalyzer, $formatter );
 	}
 
 	/**
