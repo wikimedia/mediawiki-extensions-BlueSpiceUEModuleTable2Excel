@@ -292,8 +292,9 @@ EOT;
 	 */
 	public function replaceStyleTags( string $content ): string {
 		$dom = new DOMDocument();
+		$html = '<?xml encoding="UTF-8">' . $content;
 		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-		$success = @$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		$success = @$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 		if ( !$success ) {
 			return $content;
 		}
