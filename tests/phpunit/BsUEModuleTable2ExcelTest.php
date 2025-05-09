@@ -82,7 +82,7 @@ class BsUEModuleTable2ExcelTest extends TestCase {
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->bold}bold{$this->bold}
@@ -100,7 +100,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->italic}italic{$this->italic}
@@ -118,7 +118,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->strikethrough}strikethrough{$this->strikethrough}
@@ -136,7 +136,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->underline}underline{$this->underline}
@@ -154,7 +154,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->bold}bold{$this->bold} {$this->italic}italic{$this->italic} {$this->strikethrough}strikethrough{$this->strikethrough} {$this->underline}underline{$this->underline}
@@ -172,7 +172,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->bold}{$this->italic}{$this->strikethrough}{$this->underline}boldItalicStrikethroughUnderline{$this->underline}{$this->strikethrough}{$this->italic}{$this->bold}
@@ -190,7 +190,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->red}col-red{$this->red}
@@ -208,7 +208,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->blue}col-blue{$this->blue}
@@ -226,7 +226,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->red}col-red{$this->red} {$this->blue}col-blue{$this->blue}
@@ -244,7 +244,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->red}col-red{$this->red} plain {$this->blue}col-blue{$this->blue}
@@ -262,7 +262,7 @@ EOT
 EOT
 				,
 				<<<EOT
-<table>
+<?xml encoding="UTF-8"><table>
 
 <tbody><tr>
 <td>{$this->italic}{$this->bold}{$this->red}bolditalicred{$this->red}{$this->bold}{$this->italic} plain {$this->strikethrough}{$this->underline}{$this->blue}strikethroughunderlineblue{$this->blue}{$this->underline}{$this->strikethrough}
