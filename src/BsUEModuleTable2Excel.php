@@ -75,7 +75,7 @@ class BsUEModuleTable2Excel {
 	 * );
 	 * @throws ConfigException
 	 * @throws FatalError
-	 * @throws MWException
+	 * @throws Exception
 	 * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
 	 */
 	public function createExportFile( ExportSpecification &$specification, string $content ) {
