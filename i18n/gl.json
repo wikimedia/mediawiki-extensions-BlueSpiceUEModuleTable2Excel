@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Permite a exportación a formatos Excel e CSV",
+	"bs-uemoduletable2excel-overview-title": "Exportación a Excel",
+	"bs-uemoduletable2excel-overview-description": "Exporta táboas de páxinas especiais e páxinas de contido a Excel.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Este módulo permite a exportación a Excel."
+}
