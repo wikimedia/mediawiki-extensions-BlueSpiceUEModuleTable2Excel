@@ -11,6 +11,7 @@
 		"MediaWiki": ">= 1.39.0",
 		"extensions": {
 			"BlueSpiceFoundation": ">= 4.3",
+			"BlueSpiceVisualEditorConnector": ">= 4.3",
 			"BlueSpiceUniversalExport": ">= 4.3"
 		}
 	},
