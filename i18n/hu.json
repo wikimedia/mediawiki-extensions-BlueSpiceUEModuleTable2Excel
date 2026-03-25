@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Lehetővé teszi az exportálást Excel és CSV formátumokba",
+	"bs-uemoduletable2excel-overview-title": "Excel export",
+	"bs-uemoduletable2excel-overview-description": "Táblázatokat exportál a speciális lapokról és tartalom lapokról Excelbe.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Ez a modul lehetővé teszi az exportálást Excelbe."
+}
