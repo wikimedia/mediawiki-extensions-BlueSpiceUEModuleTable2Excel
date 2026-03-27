@@ -226,6 +226,7 @@ class BsUEModuleTable2Excel {
 		);
 
 		$content = $this->replaceImagesWithAltText( $content );
+		$content = $this->omitUnselectedOptions( $content );
 		$content = $this->replaceStyleTags( $content );
 
 		$content = htmlspecialchars( $content, ENT_HTML401, 'UTF-8' );
@@ -284,6 +285,41 @@ EOT;
 			},
 			$content
 		) ?: $content;
+	}
+
+	/**
+	 * Removes unselected options from select elements,
+	 * keeping only the selected options
+	 *
+	 * @param string $content
+	 * @return string
+	 */
+	private function omitUnselectedOptions( string $content ): string {
+		$dom = new DOMDocument();
+		$html = '<?xml encoding="UTF-8">' . $content;
+		// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		$success = @$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		if ( !$success ) {
+			return $content;
+		}
+
+		$selectElements = $dom->getElementsByTagName( 'select' );
+		foreach ( $selectElements as $select ) {
+			$optionsToRemove = [];
+			foreach ( $select->childNodes as $child ) {
+				if ( $child instanceof DOMElement
+					&& $child->tagName === 'option'
+					&& !$child->hasAttribute( 'selected' )
+				) {
+					$optionsToRemove[] = $child;
+				}
+			}
+			foreach ( $optionsToRemove as $option ) {
+				$select->removeChild( $option );
+			}
+		}
+
+		return $dom->saveHTML() ?: $content;
 	}
 
 	/**
