@@ -19,7 +19,6 @@ class ExportSpecification {
 	private $params;
 
 	/**
-	 *
 	 * @param Config $config
 	 * @param User $user
 	 * @param string $modeFrom
