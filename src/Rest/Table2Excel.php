@@ -22,6 +22,9 @@ class Table2Excel extends SimpleHandler {
 		$this->module = $module;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function run() {
 		$validated = $this->getValidatedParams();
 		$modeFrom = 'html';
