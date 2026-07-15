@@ -195,7 +195,6 @@ class BsUEModuleTable2Excel {
 	}
 
 	/**
-	 *
 	 * @param array $options
 	 * @return array
 	 */
@@ -416,7 +415,6 @@ EOT;
 	}
 
 	/**
-	 *
 	 * @param Spreadsheet $spreadsheet
 	 * @param ExportSpecification $specs
 	 * @param array $options
@@ -609,7 +607,6 @@ EOT;
 	}
 
 	/**
-	 *
 	 * From https://phpspreadsheet.readthedocs.io/en/latest/topics/accessing-cells/#setting-a-formula-in-a-cell
 	 * "if you store a string value with the first character an = in a cell.
 	 *  PHPSpreadsheet will treat that value as a formula"
