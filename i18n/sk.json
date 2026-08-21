@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wizzard"
+		]
+	},
+	"bs-uemoduletable2excel-extension-description": "Umožňuje export do formátov Excel a CSV",
+	"bs-uemoduletable2excel-overview-title": "Export do Excelu",
+	"bs-uemoduletable2excel-overview-description": "Exportuje tabuľky zo špeciálnych a obsahových stránok do Excelu.",
+	"bs-uemoduletable2excel-overview-bodycontent": "Tento modul umožňuje export do Excelu."
+}
